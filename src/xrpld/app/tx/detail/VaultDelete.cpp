@@ -35,11 +35,8 @@ VaultDelete::preflight(PreflightContext const& ctx)
     if (!ctx.rules.enabled(featureSingleAssetVault))
         return temDISABLED;
 
-    if (auto const ter = preflight1(ctx))
+    if (auto const ter = preflight1(ctx, tfUniversalMask))
         return ter;
-
-    if (ctx.tx.getFlags() & tfUniversalMask)
-        return temINVALID_FLAG;
 
     if (ctx.tx[sfVaultID] == beast::zero)
         return temMALFORMED;
