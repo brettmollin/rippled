@@ -1054,6 +1054,21 @@ pseudoAccountAddress(ReadView const& view, uint256 const& pseudoOwnerKey)
     return beast::zero;
 }
 
+std::optional<SF_UINT256 const&>
+getPseudoAccountOwnerField(PseudoAccountOwnerType type)
+{
+    switch (type)
+    case PseudoAccountOwnerType::AMM:
+        return sfAMMID;
+    case PseudoAccountOwnerType::Vault:
+        return sfVaultID;
+    case PseudoAccountOwnerType::LoanBroker:
+        return sfLoanBrokerID;
+}
+
+return {};
+}
+
 Expected<std::shared_ptr<SLE>, TER>
 createPseudoAccount(
     ApplyView& view,
@@ -1085,18 +1100,13 @@ createPseudoAccount(
     account->setFieldU32(
         sfFlags, lsfDisableMaster | lsfDefaultRipple | lsfDepositAuth);
     // Link the pseudo-account with its owner object.
-    switch (type)
+    auto const& field = getPseudoAccountOwnerField(type);
+    if (field)
+        account->setFieldH256(*field, pseudoOwnerKey);
+    else
     {
-        case PseudoAccountOwnerType::AMM:
-            account->setFieldH256(sfAMMID, pseudoOwnerKey);
-            break;
-        case PseudoAccountOwnerType::Vault:
-            account->setFieldH256(sfVaultID, pseudoOwnerKey);
-            break;
-        default:
-            UNREACHABLE(
-                "ripple::createPseudoAccount : unknown owner key type");  // LCOV_EXCL_LINE
-            return Unexpected(tecINTERNAL);  // LCOV_EXCL_LINE
+        UNREACHABLE("ripple::createPseudoAccount : unknown owner key type");
+        return Unexpected(tecINTERNAL);  // LCOV_EXCL_LINE
     }
 
     view.insert(account);
