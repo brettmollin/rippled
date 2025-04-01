@@ -500,8 +500,8 @@ pseudoAccountAddress(ReadView const& view, uint256 const& pseudoOwnerKey);
 // sfLoanBrokerID
 enum class PseudoAccountOwnerType : int { AMM, Vault, LoanBroker };
 
-std::optional<SF_UINT256 const&> getPseudoAccountOwnerField(
-    PseudoAccountOwnerType);
+std::optional<std::reference_wrapper<SF_UINT256 const>>
+    getPseudoAccountOwnerField(PseudoAccountOwnerType);
 
 [[nodiscard]] Expected<std::shared_ptr<SLE>, TER>
 createPseudoAccount(

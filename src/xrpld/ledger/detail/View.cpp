@@ -1058,19 +1058,20 @@ pseudoAccountAddress(ReadView const& view, uint256 const& pseudoOwnerKey)
     return beast::zero;
 }
 
-std::optional<SF_UINT256 const&>
+std::optional<std::reference_wrapper<SF_UINT256 const>>
 getPseudoAccountOwnerField(PseudoAccountOwnerType type)
 {
     switch (type)
-    case PseudoAccountOwnerType::AMM:
-        return sfAMMID;
-    case PseudoAccountOwnerType::Vault:
-        return sfVaultID;
-    case PseudoAccountOwnerType::LoanBroker:
-        return sfLoanBrokerID;
-}
+    {
+        case PseudoAccountOwnerType::AMM:
+            return sfAMMID;
+        case PseudoAccountOwnerType::Vault:
+            return sfVaultID;
+        case PseudoAccountOwnerType::LoanBroker:
+            return sfLoanBrokerID;
+    }
 
-return {};
+    return {};
 }
 
 Expected<std::shared_ptr<SLE>, TER>
